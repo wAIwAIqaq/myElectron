@@ -6,7 +6,7 @@
     <div class="main-box">
       <div class="main-header">
         <button style="float:left" @click="toPrevMounth">上月</button>
-       {{year}} {{ month + 1 }}月
+        {{ year }} {{ month + 1 }}月
         <button style="float:right" @click="toNextMounth">下月</button>
       </div>
       <calendar-body ref="body" :month="month" :year="year" :day="today" />
@@ -40,23 +40,25 @@ export default {
       this.month = date.getMonth();
     },
     toPrevMounth() {
+      const MonthFirstDay = new Date(this.year, this.Month).getDay();
       if (this.month === 0) {
         this.month = 11;
         this.year -= 1;
-        this.$refs["body"].getMonthDays(this.year,this.month,this.today);
+        this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
         return;
       }
       this.month -= 1;
-      this.$refs["body"].getMonthDays(this.year,this.month,this.today);
+      this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
     },
     toNextMounth() {
+      const MonthFirstDay = new Date(this.year, this.Month).getDay();
       if (this.month === 11) {
         this.month = 0;
         this.year += 1;
-        this.$refs["body"].getMonthDays(this.year,this.month,this.today);
+        this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
         return;
       }
-      this.$refs["body"].getMonthDays(this.year,this.month,this.today);
+      this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
       this.month += 1;
     }
   }
