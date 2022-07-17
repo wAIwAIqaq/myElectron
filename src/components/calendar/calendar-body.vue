@@ -1,5 +1,5 @@
 <template>
-  <div class="main-body">
+  <div class="main-body" ref="main-body">
     <div
       class="body-cell body-header"
       v-for="(item, index) in dayEnums"
@@ -90,7 +90,7 @@ export default {
       this.prevMonthDays = prevMonthDays;
       this.curMonthDays = curMonthDays;
       this.nextMonthDays = nextMonthDays;
-      this.initCurrentDay();
+      this.$nextTick(()=>this.initCurrentDay());
     },
 
     initCurrentDay() {
@@ -117,9 +117,9 @@ export default {
       this.$router.push({
         name: "ToDoList",
         params: {
-            year:this.year,
-            month:this.month,
-            day
+          year: this.year,
+          month: this.month,
+          day
         }
       });
     }
