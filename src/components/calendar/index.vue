@@ -17,9 +17,21 @@
           @click="toNextMonth"
         />
       </div>
-      <prev-calendar-body ref="prevbody" :month="month" :year="year" :day="today" />
-      <calendar-body ref="body" :month="month" :year="year" :day="today" />
-      <next-calendar-body ref="nextbody" :month="month" :year="year" :day="today" />
+      <div class="box">
+        <prev-calendar-body
+          ref="prevbody"
+          :month="month - 1"
+          :year="year"
+          :day="today"
+        />
+        <calendar-body ref="body" :month="month" :year="year" :day="today" />
+        <next-calendar-body
+          ref="nextbody"
+          :month="month + 1"
+          :year="year"
+          :day="today"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -57,21 +69,29 @@ export default {
       if (this.month === 0) {
         this.month = 11;
         this.year -= 1;
-        this.$refs["body"].getMonthDays(this.year, this.month);
-        return;
+      } else {
+        this.month -= 1;
       }
-      this.month -= 1;
       this.$refs["body"].getMonthDays(this.year, this.month);
+      this.$refs["nextbody"].getMonthDays(this.year, this.month - 1);
+      if (this.month - 1 === 0) {
+        this.$refs["prevbody"].getMonthDays(this.year - 1, 11);
+      }
+      this.$refs["prevbody"].getMonthDays(this.year, this.month - 1);
     },
     toNextMonth() {
       if (this.month === 11) {
         this.month = 0;
         this.year += 1;
-        this.$refs["body"].getMonthDays(this.year, this.month);
-        return;
+      } else {
+        this.month += 1;
       }
-      this.month += 1;
       this.$refs["body"].getMonthDays(this.year, this.month);
+      this.$refs["prevbody"].getMonthDays(this.year, this.month + 1);
+      if (this.month + 1 === 11) {
+        this.$refs["nextbody"].getMonthDays(this.year + 1, 0);
+      }
+      this.$refs["nextbody"].getMonthDays(this.year, this.month + 1);
     }
   }
 };
@@ -84,6 +104,10 @@ export default {
   border-radius: 8px;
   padding: 8px;
   box-shadow: 1px 2px 3px 1px rgb(0 0 0 / 20%);
+  .box {
+    position: relative;
+    aspect-ratio: 1/1;
+  }
 }
 .main-header {
   height: 30px;
@@ -97,5 +121,9 @@ export default {
 }
 .main-body {
   width: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform-origin: 0% 50%;
 }
 </style>
