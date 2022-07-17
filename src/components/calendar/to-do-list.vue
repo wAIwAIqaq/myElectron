@@ -8,7 +8,14 @@
         <button style="float:left" @click="back">Back</button>
         {{ year }} 年 {{ month + 1 }}月 {{ day }} 日
       </div>
-      todolist
+      <ul>
+        <li v-for="(item, index) in todoList" :key="index">
+          {{ item }}
+        </li>
+      </ul>
+      <input type="text" v-show="isEdit" v-model="todoContent" />
+      <button @click="addToDoList" v-show="isEdit">save</button>
+      <button @click="isEdit = !isEdit" v-show="!isEdit">add</button>
     </div>
   </div>
 </template>
@@ -16,9 +23,13 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      isEdit: false,
+      todoContent: ""
+    };
   },
-  created() {},
+  mounted() {
+  },
   computed: {
     year() {
       return this.$route.params.year;
@@ -28,11 +39,31 @@ export default {
     },
     day() {
       return this.$route.params.day;
+    },
+    todoList() {
+      const curTodoList = JSON.parse(
+        window.localStorage.getItem(
+          `${this.year}-${this.month + 1}-${this.day}`
+        )
+      );
+      return Array.isArray(curTodoList) ? curTodoList : [];
     }
   },
   methods: {
     back() {
       this.$router.go(-1);
+    },
+    addToDoList() {
+      const year = this.year;
+      const month = this.month;
+      const day = this.day;
+      window.localStorage.setItem(
+        `${year}-${month + 1}-${day}`,
+        JSON.stringify([...this.todoList, this.todoContent])
+      );
+      this.isEdit = !this.isEdit;
+      this.todoList.push(this.todoContent);
+      this.todoContent = "";
     }
   }
 };

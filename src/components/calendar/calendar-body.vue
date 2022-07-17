@@ -18,7 +18,6 @@
       class="body-cell cur-month-day"
       v-for="item in curMonthDays"
       :key="item + Math.random()"
-      :class="today(item)"
       @click="jumpToToDoPage(item)"
     >
       <span>{{ item }}</span>
@@ -90,7 +89,7 @@ export default {
       this.prevMonthDays = prevMonthDays;
       this.curMonthDays = curMonthDays;
       this.nextMonthDays = nextMonthDays;
-      this.$nextTick(()=>this.initCurrentDay());
+      this.$nextTick(() => this.initCurrentDay());
     },
 
     initCurrentDay() {
@@ -98,18 +97,9 @@ export default {
       const curYear = curDate.getFullYear();
       const curMonth = curDate.getMonth();
       const curDay = Number(String(curDate).split(" ")[2]);
-      this.curDay = curDay;
-      this.curYear = curYear;
-      this.curMonth = curMonth;
-    },
-
-    today(day) {
-      if (
-        this.curDay === day &&
-        this.curYear === this.year &&
-        this.curMonth === this.month
-      ) {
-        return "today";
+      const days = this.$refs["main-body"].children;
+      if (curYear === this.year && curMonth === this.month) {
+        days[this.prevMonthDays.length + 6 + curDay].className += " today";
       }
     },
 
@@ -155,8 +145,19 @@ export default {
       transform: translate(-50%, -50%);
     }
   }
+  .cur-month-day:not(.today) {
+    span:hover {
+      position: abosolute;
+      height: 24px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      line-height: 24px;
+      color:#fff;
+      background-color: rgb(57, 162, 240);
+    }
+  }
   .today {
-    background: skyblue;
+    background: rgb(57, 162, 240);
     color: #fff;
   }
   .disabled {

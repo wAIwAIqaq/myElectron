@@ -5,17 +5,29 @@
   >
     <div class="main-box">
       <div class="main-header">
-        <button style="float:left" @click="toPrevMounth">上月</button>
-        {{ year }} {{ month + 1 }}月
-        <button style="float:right" @click="toNextMounth">下月</button>
+        <img
+          src="./../../assets/fonts/leftArrow.svg"
+          style="cursor:pointer;height:20px;aspect-ratio:1/1"
+          @click="toPrevMonth"
+        />
+        {{ year }} 年 {{ month + 1 }}月
+        <img
+          src="./../../assets/fonts/rightArrow.svg"
+          style="cursor:pointer;height:20px;aspect-ratio:1/1;float:right"
+          @click="toNextMonth"
+        />
       </div>
+      <prev-calendar-body ref="prevbody" :month="month" :year="year" :day="today" />
       <calendar-body ref="body" :month="month" :year="year" :day="today" />
+      <next-calendar-body ref="nextbody" :month="month" :year="year" :day="today" />
     </div>
   </div>
 </template>
 
 <script>
 import CalendarBody from "./calendar-body.vue";
+import PrevCalendarBody from "./calendar-body.vue";
+import NextCalendarBody from "./calendar-body.vue";
 import DayMap from "./ultils";
 export default {
   data() {
@@ -27,7 +39,9 @@ export default {
     };
   },
   components: {
-    CalendarBody
+    PrevCalendarBody,
+    CalendarBody,
+    NextCalendarBody
   },
   created() {
     this.initRightNow();
@@ -39,7 +53,7 @@ export default {
       this.year = date.getFullYear();
       this.month = date.getMonth();
     },
-    toPrevMounth() {
+    toPrevMonth() {
       if (this.month === 0) {
         this.month = 11;
         this.year -= 1;
@@ -49,7 +63,7 @@ export default {
       this.month -= 1;
       this.$refs["body"].getMonthDays(this.year, this.month);
     },
-    toNextMounth() {
+    toNextMonth() {
       if (this.month === 11) {
         this.month = 0;
         this.year += 1;
@@ -75,7 +89,11 @@ export default {
   height: 30px;
   width: 100%;
   line-height: 30px;
-  text-align: center;
+  padding-bottom: 8px;
+  display: grid;
+  grid-template-columns: 20px 1fr 20px;
+  align-items: center;
+  justify-items: center;
 }
 .main-body {
   width: 100%;
