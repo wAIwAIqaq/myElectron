@@ -5,7 +5,11 @@
   >
     <div class="main-box">
       <div class="main-header">
-        <button style="float:left" @click="back">Back</button>
+        <img
+          src="../../assets/fonts/back.svg"
+          style="float:left;cursor:pointer;height:20px;aspect-ratio:1/1"
+          @click="back"
+        />
         {{ year }} 年 {{ month + 1 }}月 {{ day }} 日
       </div>
       <ul>
@@ -13,9 +17,24 @@
           {{ item }}
         </li>
       </ul>
-      <input type="text" v-show="isEdit" v-model="todoContent" />
-      <button @click="addToDoList" v-show="isEdit">save</button>
-      <button @click="isEdit = !isEdit" v-show="!isEdit">add</button>
+      <input
+        type="text"
+        ref="edit-input"
+        v-show="isEdit"
+        v-model="todoContent"
+      />
+      <img
+        src="../../assets/fonts/addcircle.svg"
+        style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
+        @click="addToDoList"
+        v-show="isEdit"
+      />
+      <img
+        src="../../assets/fonts/add.svg"
+        style="float:left;cursor:pointer;height:20px;aspect-ratio:1/1"
+        @click="toEdit"
+        v-show="!isEdit"
+      />
     </div>
   </div>
 </template>
@@ -28,8 +47,7 @@ export default {
       todoContent: ""
     };
   },
-  mounted() {
-  },
+  mounted() {},
   computed: {
     year() {
       return this.$route.params.year;
@@ -53,7 +71,14 @@ export default {
     back() {
       this.$router.go(-1);
     },
+    toEdit() {
+      this.isEdit = !this.isEdit;
+      this.$refs["edit-input"].focus()
+    },
     addToDoList() {
+      if (this.todoContent.length === 0) {
+        return;
+      }
       const year = this.year;
       const month = this.month;
       const day = this.day;
@@ -76,14 +101,18 @@ export default {
   border-radius: 8px;
   padding: 8px;
   box-shadow: 1px 2px 3px 1px rgb(0 0 0 / 20%);
+  li::marker {
+    color: rgb(18, 150, 219);
+  }
 }
 .main-header {
   height: 30px;
   width: 100%;
   line-height: 30px;
-  text-align: center;
-}
-.main-body {
-  width: 100%;
+  padding-bottom: 8px;
+  display: grid;
+  grid-template-columns: 20px 1fr 20px;
+  align-items: center;
+  justify-items: center;
 }
 </style>

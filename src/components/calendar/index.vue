@@ -18,16 +18,10 @@
         />
       </div>
       <div class="box">
-        <prev-calendar-body
-          ref="prevbody"
-          :month="month - 1"
-          :year="year"
-          :day="today"
-        />
-        <calendar-body ref="body" :month="month" :year="year" :day="today" />
-        <next-calendar-body
-          ref="nextbody"
-          :month="month + 1"
+        <calendar-body
+          style="z-index:100"
+          ref="body"
+          :month="month"
           :year="year"
           :day="today"
         />
@@ -38,8 +32,6 @@
 
 <script>
 import CalendarBody from "./calendar-body.vue";
-import PrevCalendarBody from "./calendar-body.vue";
-import NextCalendarBody from "./calendar-body.vue";
 import DayMap from "./ultils";
 export default {
   data() {
@@ -51,9 +43,7 @@ export default {
     };
   },
   components: {
-    PrevCalendarBody,
-    CalendarBody,
-    NextCalendarBody
+    CalendarBody
   },
   created() {
     this.initRightNow();
@@ -73,12 +63,8 @@ export default {
         this.month -= 1;
       }
       this.$refs["body"].getMonthDays(this.year, this.month);
-      this.$refs["nextbody"].getMonthDays(this.year, this.month - 1);
-      if (this.month - 1 === 0) {
-        this.$refs["prevbody"].getMonthDays(this.year - 1, 11);
-      }
-      this.$refs["prevbody"].getMonthDays(this.year, this.month - 1);
     },
+
     toNextMonth() {
       if (this.month === 11) {
         this.month = 0;
@@ -87,11 +73,6 @@ export default {
         this.month += 1;
       }
       this.$refs["body"].getMonthDays(this.year, this.month);
-      this.$refs["prevbody"].getMonthDays(this.year, this.month + 1);
-      if (this.month + 1 === 11) {
-        this.$refs["nextbody"].getMonthDays(this.year + 1, 0);
-      }
-      this.$refs["nextbody"].getMonthDays(this.year, this.month + 1);
     }
   }
 };
@@ -118,12 +99,5 @@ export default {
   grid-template-columns: 20px 1fr 20px;
   align-items: center;
   justify-items: center;
-}
-.main-body {
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform-origin: 0% 50%;
 }
 </style>

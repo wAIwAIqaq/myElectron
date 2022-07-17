@@ -119,6 +119,12 @@ export default {
 
 <style lang="scss" scoped>
 .main-body {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0% 0%;
+  background: #fff;
   display: grid;
   box-sizing: border-box;
   border-left: 1px solid rgb(235, 235, 235);
@@ -152,12 +158,12 @@ export default {
       aspect-ratio: 1;
       border-radius: 50%;
       line-height: 24px;
-      color:#fff;
-      background-color: rgb(57, 162, 240);
+      color: #fff;
+      background-color: rgb(18, 150, 219);
     }
   }
   .today {
-    background: rgb(57, 162, 240);
+    background: rgb(18, 150, 219);
     color: #fff;
   }
   .disabled {
