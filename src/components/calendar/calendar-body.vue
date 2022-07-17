@@ -15,9 +15,11 @@
       <span>{{ item }}</span>
     </div>
     <div
-      class="body-cell"
+      class="body-cell cur-month-day"
       v-for="item in curMonthDays"
       :key="item + Math.random()"
+      :class="today(item)"
+      @click="jumpToToDoPage(item)"
     >
       <span>{{ item }}</span>
     </div>
@@ -57,18 +59,19 @@ export default {
     };
   },
   mounted() {
-    this.getMonthDays(this.year, this.month, this.day);
+    this.getMonthDays(this.year, this.month);
   },
-  watch: {},
   methods: {
-    getMonthDays(year, month, day) {
+    getMonthDays(year, month) {
+      let monthFirstDay = new Date(year, month, 1).getDay();
+      if (monthFirstDay == 0) monthFirstDay = 7;
       const d = new Date(year, month + 1, 0);
       const days = d.getDate();
       const curMonthDays = [];
       let prevMonthDay = new Date(year, month, 0).getDate();
       const prevMonthDays = [];
       let i = 0;
-      while (i < day) {
+      while (i < monthFirstDay) {
         prevMonthDays.unshift(prevMonthDay);
         prevMonthDay--;
         i++;
@@ -87,6 +90,38 @@ export default {
       this.prevMonthDays = prevMonthDays;
       this.curMonthDays = curMonthDays;
       this.nextMonthDays = nextMonthDays;
+      this.initCurrentDay();
+    },
+
+    initCurrentDay() {
+      const curDate = new Date();
+      const curYear = curDate.getFullYear();
+      const curMonth = curDate.getMonth();
+      const curDay = Number(String(curDate).split(" ")[2]);
+      this.curDay = curDay;
+      this.curYear = curYear;
+      this.curMonth = curMonth;
+    },
+
+    today(day) {
+      if (
+        this.curDay === day &&
+        this.curYear === this.year &&
+        this.curMonth === this.month
+      ) {
+        return "today";
+      }
+    },
+
+    jumpToToDoPage(day) {
+      this.$router.push({
+        name: "ToDoList",
+        params: {
+            year:this.year,
+            month:this.month,
+            day
+        }
+      });
     }
   }
 };
@@ -99,11 +134,11 @@ export default {
   border-left: 1px solid rgb(235, 235, 235);
   border-top: 1px solid rgb(235, 235, 235);
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(7, 1fr);
   .body-header {
     background: #f0f0f0;
     height: 20px;
     line-height: 20px;
+    width: 100%;
   }
   .body-cell {
     text-align: center;
@@ -112,12 +147,17 @@ export default {
     border-right: 1px solid rgb(235, 235, 235);
     position: relative;
     cursor: pointer;
+    aspect-ratio: 1/1;
     span {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
     }
+  }
+  .today {
+    background: skyblue;
+    color: #fff;
   }
   .disabled {
     cursor: not-allowed;

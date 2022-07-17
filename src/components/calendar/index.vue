@@ -40,26 +40,24 @@ export default {
       this.month = date.getMonth();
     },
     toPrevMounth() {
-      const MonthFirstDay = new Date(this.year, this.Month).getDay();
       if (this.month === 0) {
         this.month = 11;
         this.year -= 1;
-        this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
+        this.$refs["body"].getMonthDays(this.year, this.month);
         return;
       }
       this.month -= 1;
-      this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
+      this.$refs["body"].getMonthDays(this.year, this.month);
     },
     toNextMounth() {
-      const MonthFirstDay = new Date(this.year, this.Month).getDay();
       if (this.month === 11) {
         this.month = 0;
         this.year += 1;
-        this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
+        this.$refs["body"].getMonthDays(this.year, this.month);
         return;
       }
-      this.$refs["body"].getMonthDays(this.year, this.month, MonthFirstDay);
       this.month += 1;
+      this.$refs["body"].getMonthDays(this.year, this.month);
     }
   }
 };
@@ -68,7 +66,6 @@ export default {
 <style lang="scss" scoped>
 .main-box {
   width: 300px;
-  height: 200px;
   background-color: #fff;
   border-radius: 8px;
   padding: 8px;
@@ -82,6 +79,5 @@ export default {
 }
 .main-body {
   width: 100%;
-  height: calc(100% - 30px);
 }
 </style>
