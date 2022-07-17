@@ -12,28 +12,34 @@
         />
         {{ year }} 年 {{ month + 1 }}月 {{ day }} 日
       </div>
-      <ul>
-        <li v-for="(item, index) in todoList" :key="index">
+      <ul style="padding:16px">
+        <li
+          v-for="(item, index) in todoList"
+          class="list-item"
+          :key="index"
+          @click="editItem"
+        >
           {{ item }}
         </li>
       </ul>
       <input
         type="text"
         ref="edit-input"
-        v-show="isEdit"
+        class="w-input"
+        v-show="isAdd"
         v-model="todoContent"
       />
       <img
         src="../../assets/fonts/addcircle.svg"
         style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
         @click="addToDoList"
-        v-show="isEdit"
+        v-show="isAdd"
       />
       <img
         src="../../assets/fonts/add.svg"
         style="float:left;cursor:pointer;height:20px;aspect-ratio:1/1"
-        @click="toEdit"
-        v-show="!isEdit"
+        @click="toAdd"
+        v-show="!isAdd"
       />
     </div>
   </div>
@@ -43,7 +49,7 @@
 export default {
   data() {
     return {
-      isEdit: false,
+      isAdd: false,
       todoContent: ""
     };
   },
@@ -71,10 +77,10 @@ export default {
     back() {
       this.$router.go(-1);
     },
-    toEdit() {
-      this.isEdit = !this.isEdit;
-      this.$refs["edit-input"].focus()
+    toAdd() {
+      this.isAdd = !this.isAdd;
     },
+    editItem() {},
     addToDoList() {
       if (this.todoContent.length === 0) {
         return;
@@ -86,7 +92,7 @@ export default {
         `${year}-${month + 1}-${day}`,
         JSON.stringify([...this.todoList, this.todoContent])
       );
-      this.isEdit = !this.isEdit;
+      this.isAdd = !this.isAdd;
       this.todoList.push(this.todoContent);
       this.todoContent = "";
     }
@@ -101,6 +107,25 @@ export default {
   border-radius: 8px;
   padding: 8px;
   box-shadow: 1px 2px 3px 1px rgb(0 0 0 / 20%);
+  .list-item {
+    word-wrap: break-word;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    background: transparent;
+    backdrop-filter: blur(2px);
+    border-radius: 4px;
+    animation: fadeIn 0.5s 1 linear;
+    padding:4px 4px;
+    margin: 4px;
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+  }
   li::marker {
     color: rgb(18, 150, 219);
   }

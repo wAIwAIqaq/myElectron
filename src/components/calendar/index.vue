@@ -19,7 +19,6 @@
       </div>
       <div class="box">
         <calendar-body
-          style="z-index:100"
           ref="body"
           :month="month"
           :year="year"

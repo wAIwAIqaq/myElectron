@@ -60,6 +60,9 @@ export default {
   mounted() {
     this.getMonthDays(this.year, this.month);
   },
+  activated() {
+    this.getMonthDays(this.year, this.month);
+  },
   methods: {
     getMonthDays(year, month) {
       let monthFirstDay = new Date(year, month, 1).getDay();
@@ -89,7 +92,10 @@ export default {
       this.prevMonthDays = prevMonthDays;
       this.curMonthDays = curMonthDays;
       this.nextMonthDays = nextMonthDays;
-      this.$nextTick(() => this.initCurrentDay());
+      this.$nextTick(() => {
+        this.initCurrentDay();
+        this.initTodoListDay();
+      });
     },
 
     initCurrentDay() {
@@ -100,6 +106,22 @@ export default {
       const days = this.$refs["main-body"].children;
       if (curYear === this.year && curMonth === this.month) {
         days[this.prevMonthDays.length + 6 + curDay].className += " today";
+      }
+    },
+
+    initTodoListDay() {
+      const days = this.$refs["main-body"].children;
+      let i = 7;
+      while (i < days.length) {
+        const curTodoList = JSON.parse(
+          window.localStorage.getItem(
+            `${this.year}-${this.month + 1}-${days[i].children[0].innerHTML}`
+          )
+        );
+        if (Array.isArray(curTodoList) && curTodoList.length > 0) {
+          days[i].className += " todo";
+        }
+        i++;
       }
     },
 
@@ -124,19 +146,20 @@ export default {
   top: 0;
   left: 0;
   transform-origin: 0% 0%;
-  background: #fff;
+  background: transparent;
   display: grid;
   box-sizing: border-box;
   border-left: 1px solid rgb(235, 235, 235);
   border-top: 1px solid rgb(235, 235, 235);
   grid-template-columns: repeat(7, 1fr);
   .body-header {
-    background: #f0f0f0;
+    background: transparent;
     height: 20px;
     line-height: 20px;
     width: 100%;
   }
   .body-cell {
+    box-sizing: border-box;
     text-align: center;
     font-size: 10px;
     border-bottom: 1px solid rgb(235, 235, 235);
@@ -151,6 +174,16 @@ export default {
       transform: translate(-50%, -50%);
     }
   }
+  .todo::before {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    top: 5px;
+    right: 5px;
+    border-radius: 50%;
+    background-color: red;
+  }
   .cur-month-day:not(.today) {
     span:hover {
       position: abosolute;
@@ -160,10 +193,16 @@ export default {
       line-height: 24px;
       color: #fff;
       background-color: rgb(18, 150, 219);
+      box-shadow: inset 2px 2px 1px rgba(0, 0, 0, 0.15),
+        inset -2px -2px 1px rgba(255, 255, 255, 0.15),
+        2px 2px 1px rgba(0, 0, 0, 0.15), -2px -2px 1px rgba(255, 255, 255, 0.15);
     }
   }
   .today {
     background: rgb(18, 150, 219);
+    border-radius: 10%;
+    box-shadow: inset 5px 5px 5px rgba(0, 0, 0, 0.15),
+      inset -5px -5px 5px rgba(255, 255, 255, 0.15);
     color: #fff;
   }
   .disabled {
