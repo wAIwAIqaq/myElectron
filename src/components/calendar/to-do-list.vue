@@ -12,14 +12,16 @@
         />
         {{ year }} 年 {{ month + 1 }}月 {{ day }} 日
       </div>
-      <ul style="padding:16px">
-        <li
-          v-for="(item, index) in todoList"
-          class="list-item"
-          :key="index"
-          @click="editItem"
-        >
+      <ul style="padding:16px" ref="list">
+        <li v-for="(item, index) in todoList" class="list-item" :key="index">
           {{ item }}
+          <span>
+            <img
+              src="../../assets/fonts/edit.svg"
+              style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
+              @click="editItem(index)"
+            />
+          </span>
         </li>
       </ul>
       <input
@@ -77,10 +79,42 @@ export default {
     back() {
       this.$router.go(-1);
     },
+
     toAdd() {
       this.isAdd = !this.isAdd;
     },
-    editItem() {},
+
+    editItem(index) {
+      const parent = this.$refs["list"];
+      const curItem = parent.children[index];
+      const curTextArea = document.createElement("div");
+      const width = curItem.clientWidth;
+      const height = curItem.clientHeight;
+      curTextArea.value = this.todoList[index];
+      curTextArea.setAttribute(
+        "style",
+        `font-family:Microsoft YaHei;font-size:16px;width:${width -
+          8}px;outline:none`
+      );
+      curTextArea.innerText = this.todoList[index];
+      curTextArea.className = "list-item";
+      curTextArea.contentEditable = "true";
+      parent.insertBefore(curTextArea, curItem);
+      curTextArea.focus();
+      curTextArea.addEventListener("blur", () => {
+        this.todoList[index] = curTextArea.innerText;
+        curItem.innerText = curTextArea.innerText;
+        parent.insertBefore(curItem, curTextArea);
+        curTextArea.remove();
+        window.localStorage.setItem(
+          `${this.year}-${this.month + 1}-${this.day}`,
+          JSON.stringify(this.todoList)
+        );
+        // this.$router.go(0);
+      });
+      curItem.remove();
+    },
+
     addToDoList() {
       if (this.todoContent.length === 0) {
         return;
@@ -115,7 +149,7 @@ export default {
     backdrop-filter: blur(2px);
     border-radius: 4px;
     animation: fadeIn 0.5s 1 linear;
-    padding:4px 4px;
+    padding: 4px 4px;
     margin: 4px;
     @keyframes fadeIn {
       0% {
@@ -125,9 +159,6 @@ export default {
         opacity: 1;
       }
     }
-  }
-  li::marker {
-    color: rgb(18, 150, 219);
   }
 }
 .main-header {
