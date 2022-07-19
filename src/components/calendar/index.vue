@@ -31,7 +31,6 @@
 
 <script>
 import CalendarBody from "./calendar-body.vue";
-import DayMap from "./ultils";
 export default {
   data() {
     return {

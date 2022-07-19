@@ -12,7 +12,7 @@
         />
         {{ year }} 年 {{ month + 1 }}月 {{ day }} 日
       </div>
-      <ul style="padding:16px" ref="list">
+      <ul style="padding:16px;margin:0" ref="list">
         <li v-for="(item, index) in todoList" class="list-item" :key="index">
           {{ item }}
           <span>
@@ -24,25 +24,18 @@
           </span>
         </li>
       </ul>
-      <input
-        type="text"
-        ref="edit-input"
-        class="w-input"
-        v-show="isAdd"
-        v-model="todoContent"
-      />
-      <img
-        src="../../assets/fonts/addcircle.svg"
-        style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
-        @click="addToDoList"
-        v-show="isAdd"
-      />
-      <img
-        src="../../assets/fonts/add.svg"
-        style="float:left;cursor:pointer;height:20px;aspect-ratio:1/1"
-        @click="toAdd"
-        v-show="!isAdd"
-      />
+      <div class="edit-area">
+        <textarea
+          type="text"
+          class="w-input"
+          v-model="todoContent"
+        />
+        <img
+          src="../../assets/fonts/addcircle.svg"
+          style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
+          @click="addToDoList"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -51,7 +44,6 @@
 export default {
   data() {
     return {
-      isAdd: false,
       todoContent: ""
     };
   },
@@ -80,13 +72,10 @@ export default {
       this.$router.go(-1);
     },
 
-    toAdd() {
-      this.isAdd = !this.isAdd;
-    },
-
     editItem(index) {
       const parent = this.$refs["list"];
       const curItem = parent.children[index];
+      const childEle = curItem.firstElementChild.cloneNode();
       const curTextArea = document.createElement("div");
       const width = curItem.clientWidth;
       const height = curItem.clientHeight;
@@ -101,18 +90,38 @@ export default {
       curTextArea.contentEditable = "true";
       parent.insertBefore(curTextArea, curItem);
       curTextArea.focus();
+      this.keepLastIndex(curTextArea);
       curTextArea.addEventListener("blur", () => {
-        this.todoList[index] = curTextArea.innerText;
-        curItem.innerText = curTextArea.innerText;
-        parent.insertBefore(curItem, curTextArea);
-        curTextArea.remove();
+        if (curTextArea.innerText.length > 0) {
+          this.todoList[index] = curTextArea.innerText;
+          curItem.appendChild(childEle);
+          parent.insertBefore(curItem, curTextArea);
+        } else {
+          this.todoList.splice(index, 1);
+        }
         window.localStorage.setItem(
           `${this.year}-${this.month + 1}-${this.day}`,
           JSON.stringify(this.todoList)
         );
-        // this.$router.go(0);
+        curTextArea.remove();
       });
       curItem.remove();
+    },
+    keepLastIndex(textArea) {
+      if (window.getSelection) {
+        //ie11 10 9 ff safari
+        textArea.focus(); //解决ff不获取焦点无法定位问题
+        const range = window.getSelection(); //创建range
+        range.selectAllChildren(textArea); //range 选择textArea下所有子内容
+        range.collapseToEnd(); //光标移至最后
+      } else if (document.selection) {
+        //ie10 9 8 7 6 5
+        const range = document.selection.createRange(); //创建选择对象
+        //const range = document.body.createTextRange();
+        range.moveToElementText(textArea); //range定位到textArea
+        range.collapse(false); //光标移至最后
+        range.select();
+      }
     },
 
     addToDoList() {
@@ -126,7 +135,6 @@ export default {
         `${year}-${month + 1}-${day}`,
         JSON.stringify([...this.todoList, this.todoContent])
       );
-      this.isAdd = !this.isAdd;
       this.todoList.push(this.todoContent);
       this.todoContent = "";
     }
@@ -159,6 +167,14 @@ export default {
         opacity: 1;
       }
     }
+  }
+  .edit-area {
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    align-items: center;
+    justify-items: stretch;
+    margin: 18px;
+    margin-top: 0;
   }
 }
 .main-header {
