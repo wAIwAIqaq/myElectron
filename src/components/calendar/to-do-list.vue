@@ -14,8 +14,13 @@
       </div>
       <ul style="padding:16px;margin:0" ref="list">
         <li v-for="(item, index) in todoList" class="list-item" :key="index">
-          {{ item }}
+          <span>{{ item }}</span>
           <span>
+            <img
+              src="../../assets/fonts/close.svg"
+              style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
+              @click="delItem(index)"
+            />
             <img
               src="../../assets/fonts/edit.svg"
               style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
@@ -25,11 +30,7 @@
         </li>
       </ul>
       <div class="edit-area">
-        <textarea
-          type="text"
-          class="w-input"
-          v-model="todoContent"
-        />
+        <textarea type="text" class="w-input" v-model="todoContent" />
         <img
           src="../../assets/fonts/addcircle.svg"
           style="float:right;cursor:pointer;height:20px;aspect-ratio:1/1"
@@ -47,7 +48,6 @@ export default {
       todoContent: ""
     };
   },
-  mounted() {},
   computed: {
     year() {
       return this.$route.params.year;
@@ -75,7 +75,7 @@ export default {
     editItem(index) {
       const parent = this.$refs["list"];
       const curItem = parent.children[index];
-      const childEle = curItem.firstElementChild.cloneNode();
+      const preCurItemStyle = curItem.style;
       const curTextArea = document.createElement("div");
       const width = curItem.clientWidth;
       const height = curItem.clientHeight;
@@ -94,19 +94,32 @@ export default {
       curTextArea.addEventListener("blur", () => {
         if (curTextArea.innerText.length > 0) {
           this.todoList[index] = curTextArea.innerText;
-          curItem.appendChild(childEle);
-          parent.insertBefore(curItem, curTextArea);
+          curItem.children[0].innerText = curTextArea.innerText;
+          curItem.style = preCurItemStyle;
         } else {
           this.todoList.splice(index, 1);
         }
-        window.localStorage.setItem(
-          `${this.year}-${this.month + 1}-${this.day}`,
-          JSON.stringify(this.todoList)
-        );
         curTextArea.remove();
+        this.saveChanged();
       });
-      curItem.remove();
+      curItem.style="display:none"
     },
+
+    delItem(index) {
+      const parent = this.$refs["list"];
+      const curItem = parent.children[index];
+      curItem.remove();
+      this.todoList.splice(index, 1);
+      this.saveChanged();
+    },
+
+    saveChanged() {
+      window.localStorage.setItem(
+        `${this.year}-${this.month + 1}-${this.day}`,
+        JSON.stringify(this.todoList)
+      );
+    },
+
     keepLastIndex(textArea) {
       if (window.getSelection) {
         //ie11 10 9 ff safari
