@@ -59,11 +59,6 @@ export default {
   created() {
     this.initRightNow();
   },
-  watch: {
-    month(newVal, val) {
-      console.log(newVal, val);
-    }
-  },
   methods: {
     initRightNow() {
       const date = new Date();
