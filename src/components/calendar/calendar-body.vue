@@ -119,7 +119,9 @@ export default {
           )
         );
         if (Array.isArray(curTodoList) && curTodoList.length > 0) {
-          days[i].className += " todo";
+          if (!days[i].className.includes("disabled")) {
+            days[i].className += " todo";
+          }
         }
         i++;
       }

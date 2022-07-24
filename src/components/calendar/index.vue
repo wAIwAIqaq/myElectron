@@ -10,7 +10,25 @@
           style="cursor:pointer;height:20px;aspect-ratio:1/1"
           @click="toPrevMonth"
         />
-        {{ year }} 年 {{ month + 1 }}月
+        <div>
+          <div
+            ref="year"
+            style="display:inline-block;border:2px solid transparent"
+            @click="editYear"
+          >
+            {{ year }}
+          </div>
+          <span style="border:1px solid transparent">年</span>
+          <div
+            ref="month"
+            style="display:inline-block;border:2px solid transparent"
+            @click="editMonth"
+          >
+            {{ month + 1 < 10 ? `0` + (month + 1) : month + 1 }}
+          </div>
+          <span style="border:1px solid transparent">月</span>
+        </div>
+
         <img
           src="./../../assets/fonts/rightArrow.svg"
           style="cursor:pointer;height:20px;aspect-ratio:1/1;float:right"
@@ -18,12 +36,7 @@
         />
       </div>
       <div class="box">
-        <calendar-body
-          ref="body"
-          :month="month"
-          :year="year"
-          :day="today"
-        />
+        <calendar-body ref="body" :month="month" :year="year" :day="today" />
       </div>
     </div>
   </div>
@@ -71,6 +84,51 @@ export default {
         this.month += 1;
       }
       this.$refs["body"].getMonthDays(this.year, this.month);
+    },
+
+    editYear() {
+      const curItem = this.$refs["year"];
+      curItem.style.outline = "none";
+      curItem.contentEditable = true;
+      curItem.style.borderBottom = "2px solid #333";
+      const saveFn = () => {
+        let curYear = Number(curItem.innerText);
+        if (curYear > 2099) {
+          this.year = 2099;
+        } else if (curYear < 1970) {
+          this.year = 1970;
+        } else {
+          this.year = curYear;
+        }
+        curItem.style.borderBottom = "2px solid transparent";
+        this.$refs["body"].getMonthDays(this.year, this.month);
+        curItem.removeEventListener("blur", saveFn);
+      };
+      curItem.addEventListener("blur", saveFn);
+    },
+
+    editMonth() {
+      const curItem = this.$refs["month"];
+      curItem.style.outline = "none";
+      curItem.contentEditable = true;
+      curItem.style.boxSizing = "border-box";
+      curItem.style.borderBottom = "2px solid #333";
+      const saveFn = () => {
+        let curMonth = Number(curItem.innerText);
+        if (curMonth > 11) {
+          curItem.innerText = 12;
+          this.month = 11;
+        } else if (curMonth < 0) {
+          curItem.innerText = 1;
+          this.month = 0;
+        } else {
+          this.month = curMonth - 1;
+        }
+        curItem.style.borderBottom = "2px solid transparent";
+        this.$refs["body"].getMonthDays(this.year, this.month);
+        curItem.removeEventListener("blur", saveFn);
+      };
+      curItem.addEventListener("blur", saveFn);
     }
   }
 };
