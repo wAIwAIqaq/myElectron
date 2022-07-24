@@ -59,6 +59,11 @@ export default {
   created() {
     this.initRightNow();
   },
+  watch: {
+    month(newVal, val) {
+      console.log(newVal, val);
+    }
+  },
   methods: {
     initRightNow() {
       const date = new Date();
@@ -102,33 +107,28 @@ export default {
         }
         curItem.style.borderBottom = "2px solid transparent";
         this.$refs["body"].getMonthDays(this.year, this.month);
-        curItem.removeEventListener("blur", saveFn);
       };
-      curItem.addEventListener("blur", saveFn);
+      curItem.addEventListener("blur", saveFn, { once: true });
     },
 
     editMonth() {
       const curItem = this.$refs["month"];
       curItem.style.outline = "none";
       curItem.contentEditable = true;
-      curItem.style.boxSizing = "border-box";
       curItem.style.borderBottom = "2px solid #333";
       const saveFn = () => {
         let curMonth = Number(curItem.innerText);
         if (curMonth > 11) {
-          curItem.innerText = 12;
           this.month = 11;
         } else if (curMonth < 0) {
-          curItem.innerText = 1;
           this.month = 0;
         } else {
           this.month = curMonth - 1;
         }
         curItem.style.borderBottom = "2px solid transparent";
         this.$refs["body"].getMonthDays(this.year, this.month);
-        curItem.removeEventListener("blur", saveFn);
       };
-      curItem.addEventListener("blur", saveFn);
+      curItem.addEventListener("blur", saveFn, { once: true });
     }
   }
 };
